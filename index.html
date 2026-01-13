@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="お子様の言葉の成長を記録・振り返りできるアプリ。簡単操作で日々の言葉を記録しましょう。">
+    <meta name="theme-color" content="#6366f1">
+    <title>ことばの記録 - 子供の言葉成長アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <h1 class="app-title">ことばの記録</h1>
+            <div class="header-actions">
+                <button class="icon-btn" id="settingsBtn" aria-label="設定">
+                    <span class="material-icons-round">settings</span>
+                </button>
+                <button class="icon-btn" id="themeToggle" aria-label="テーマ切り替え">
+                    <span class="material-icons-round">dark_mode</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="home">
+                <span class="material-icons-round">home</span>
+                <span>ホーム</span>
+            </button>
+            <button class="nav-tab" data-tab="list">
+                <span class="material-icons-round">list_alt</span>
+                <span>一覧</span>
+            </button>
+            <button class="nav-tab" data-tab="stats">
+                <span class="material-icons-round">insights</span>
+                <span>成長</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Tab -->
+            <section id="home-tab" class="tab-content active">
+                <div class="home-container">
+                    <!-- Summary Card -->
+                    <div class="summary-card">
+                        <div class="summary-header">
+                            <span class="summary-month" id="currentMonth"></span>
+                            <span class="summary-label">今月のことば</span>
+                        </div>
+                        <div class="summary-count">
+                            <span class="count-number" id="monthlyCount">0</span>
+                            <span class="count-unit">語</span>
+                        </div>
+                        <div class="summary-total">
+                            累計: <span id="totalCount">0</span>語
+                        </div>
+                    </div>
+
+                    <!-- First Word Highlight -->
+                    <div class="highlight-card" id="firstWordCard" style="display: none;">
+                        <div class="highlight-icon">
+                            <span class="material-icons-round">star</span>
+                        </div>
+                        <div class="highlight-content">
+                            <span class="highlight-label">最初に覚えた言葉</span>
+                            <span class="highlight-word" id="firstWord"></span>
+                            <span class="highlight-date" id="firstWordDate"></span>
+                        </div>
+                    </div>
+
+                    <!-- Recent Words -->
+                    <div class="section-header">
+                        <h2>最近のことば</h2>
+                        <button class="text-btn" id="viewAllBtn">すべて見る</button>
+                    </div>
+                    <div class="recent-words" id="recentWords">
+                        <div class="empty-state" id="emptyState">
+                            <span class="material-icons-round">child_care</span>
+                            <p>まだ言葉が登録されていません</p>
+                            <p class="empty-hint">下のボタンから最初の言葉を記録しましょう！</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- List Tab -->
+            <section id="list-tab" class="tab-content">
+                <div class="list-container">
+                    <!-- Search & Filter Bar -->
+                    <div class="search-bar">
+                        <span class="material-icons-round">search</span>
+                        <input type="text" id="searchInput" placeholder="言葉やメモを検索...">
+                        <button class="icon-btn small" id="filterBtn">
+                            <span class="material-icons-round">filter_list</span>
+                        </button>
+                    </div>
+
+                    <!-- Filter Panel -->
+                    <div class="filter-panel" id="filterPanel">
+                        <div class="filter-section">
+                            <label>月齢</label>
+                            <div class="age-filter" id="ageFilter">
+                                <button class="age-chip" data-age="all">すべて</button>
+                            </div>
+                        </div>
+                        <div class="filter-section">
+                            <label>ジャンル</label>
+                            <div class="genre-chips" id="filterGenres"></div>
+                        </div>
+                        <div class="filter-section">
+                            <label>日付範囲</label>
+                            <div class="date-range">
+                                <input type="date" id="dateFrom" placeholder="開始日">
+                                <span>〜</span>
+                                <input type="date" id="dateTo" placeholder="終了日">
+                            </div>
+                        </div>
+                        <div class="filter-section">
+                            <label>並び順</label>
+                            <div class="sort-options">
+                                <button class="sort-btn active" data-sort="desc">新しい順</button>
+                                <button class="sort-btn" data-sort="asc">古い順</button>
+                            </div>
+                        </div>
+                        <button class="filter-reset" id="resetFilter">フィルタをリセット</button>
+                    </div>
+
+                    <!-- Word List -->
+                    <div class="word-list" id="wordList"></div>
+                </div>
+            </section>
+
+            <!-- Stats Tab -->
+            <section id="stats-tab" class="tab-content">
+                <div class="stats-container">
+                    <div class="stats-card">
+                        <h3>記録数の推移</h3>
+                        <div class="period-selector">
+                            <button class="period-btn active" data-period="month">月</button>
+                            <button class="period-btn" data-period="week">週</button>
+                            <button class="period-btn" data-period="day">日</button>
+                        </div>
+                        <div class="chart-container" id="monthlyChart"></div>
+                    </div>
+                    <div class="stats-card">
+                        <h3>ジャンル別の割合</h3>
+                        <div class="genre-stats" id="genreStats"></div>
+                    </div>
+                    <div class="milestones-card">
+                        <h3>成長のマイルストーン</h3>
+                        <div class="milestones" id="milestones"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FAB -->
+        <button class="fab" id="addWordBtn" aria-label="言葉を追加">
+            <span class="material-icons-round">add</span>
+        </button>
+
+        <!-- Bottom Sheet Overlay -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Add/Edit Bottom Sheet -->
+        <div class="bottom-sheet" id="wordSheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <h2 id="sheetTitle">ことばを追加</h2>
+                <button class="icon-btn" id="closeSheet">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <form class="sheet-form" id="wordForm">
+                <input type="hidden" id="editWordId">
+
+                <div class="form-group">
+                    <label for="wordInput">ことば <span class="required">*</span></label>
+                    <input type="text" id="wordInput" placeholder="例: まんま、ママ" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateInput">記録日</label>
+                    <input type="date" id="dateInput">
+                </div>
+
+                <div class="form-group">
+                    <label>ジャンル</label>
+                    <div class="genre-chips" id="genreChips"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="memoInput">メモ（状況など）</label>
+                    <textarea id="memoInput" rows="3" placeholder="どんな時に話したか..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">キャンセル</button>
+                    <button type="submit" class="btn-primary" id="saveBtn">保存</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Detail Bottom Sheet -->
+        <div class="bottom-sheet detail-sheet" id="detailSheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <h2>ことばの詳細</h2>
+                <button class="icon-btn" id="closeDetailSheet">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="detail-content" id="detailContent"></div>
+            <div class="detail-actions">
+                <button class="btn-icon-text" id="editWordBtn">
+                    <span class="material-icons-round">edit</span>
+                    編集
+                </button>
+                <button class="btn-icon-text danger" id="deleteWordBtn">
+                    <span class="material-icons-round">delete</span>
+                    削除
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Bottom Sheet -->
+        <div class="bottom-sheet" id="settingsSheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <h2>設定</h2>
+                <button class="icon-btn" id="closeSettingsSheet">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="settings-content">
+                <div class="settings-section">
+                    <div class="settings-item">
+                        <div class="settings-item-header">
+                            <span class="material-icons-round">cake</span>
+                            <div class="settings-item-content">
+                                <div class="settings-item-title">お子様の誕生日</div>
+                                <div class="settings-item-desc">月齢フィルター機能を使用するために設定してください</div>
+                            </div>
+                        </div>
+                        <input type="date" id="birthdayInput" class="settings-date-input">
+                    </div>
+                </div>
+                <div class="settings-actions">
+                    <button class="btn-primary" id="saveBirthdayBtn">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Dialog -->
+        <div class="dialog-overlay" id="deleteDialog">
+            <div class="dialog">
+                <h3>削除の確認</h3>
+                <p>この言葉を削除しますか？<br>この操作は元に戻せません。</p>
+                <div class="dialog-actions">
+                    <button class="btn-secondary" id="cancelDelete">キャンセル</button>
+                    <button class="btn-danger" id="confirmDelete">削除する</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
